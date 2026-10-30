@@ -13,9 +13,10 @@ public class App {
         String fileName = "test.txt";
 
         expenseManager.addExpense(expenses, new BigDecimal("2000"), today, "hhh", "Toma", fileName);
-        expenseManager.showAll(fileName);
+        //expenseManager.showAll(fileName);
         expenseManager.printSum(fileName);
         expenseManager.showByCategory(fileName, "Toma");
         //expenseManager.deleteExpense(fileName, 0);
+        expenseManager.showStat(fileName, "Toma");
     }
 }

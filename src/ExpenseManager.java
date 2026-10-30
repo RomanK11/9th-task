@@ -21,6 +21,14 @@ public class ExpenseManager {
         return null;
     }
 
+    private void save(ArrayList<Expense> expenses, String fileName) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(expenses);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public void addExpense(ArrayList<Expense> expenses, BigDecimal amount, LocalDate date, String description,
             String category, String fileName) {
@@ -41,14 +49,9 @@ public class ExpenseManager {
 
         expenses.add(expense);
 
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
-            oos.writeObject(expenses);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        save(expenses, fileName);
     }
 
-    
     public void showAll(String fileName) {
         ArrayList<Expense> expenses = new ArrayList<>();
 
@@ -65,14 +68,12 @@ public class ExpenseManager {
                 System.out.println();
             }
         }
-
     }
 
-    @SuppressWarnings("unchecked")
     public void printSum(String fileName) {
         ArrayList<Expense> expenses = new ArrayList<>();
 
-        init(expenses, fileName);
+        expenses = init(expenses, fileName);
 
         BigDecimal sum = BigDecimal.ZERO;
 
@@ -87,7 +88,7 @@ public class ExpenseManager {
     public void showByCategory(String fileName, String category) {
         ArrayList<Expense> expenses = new ArrayList<>();
 
-        init(expenses, fileName);
+        expenses = init(expenses, fileName);
 
         if (expenses != null) {
             for (int i = 0; i < expenses.size(); i++) {
@@ -100,33 +101,68 @@ public class ExpenseManager {
                     System.out.println(expense.getDate());
                     System.out.println();
                 }
-
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void deleteExpense(String fileName, int index) {
         ArrayList<Expense> expenses = new ArrayList<>();
 
-        init(expenses, fileName);
-
-        if (index < 0 && index >= expenses.size()) {
-            System.out.println("error");
+        expenses = init(expenses, fileName);
+        if (expenses == null) {
+            System.out.println("NULL");
             return ;
+        }
+
+
+        if (index < 0 || index >= expenses.size()) {
+            System.out.println("error");
+            return;
         }
 
         if (expenses.size() != 0 && expenses != null) {
             expenses.remove(index);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
-                oos.writeObject(expenses);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            save(expenses, fileName);
         }
     }
 
     public void showStat(String fileName, String category) {
+        ArrayList<Expense> expenses = new ArrayList<>();
 
+        expenses = init(expenses, fileName);
+        if (expenses == null) {
+            System.out.println("NULL");
+            return;
+        }
+
+        BigDecimal sum = BigDecimal.ZERO;
+
+        int quantity = 0;
+        BigDecimal min = expenses.get(0).getAmount();
+        BigDecimal max = expenses.get(0).getAmount();
+
+        for (int i = 0; i < expenses.size(); i++) {
+            BigDecimal currentAmount = expenses.get(i).getAmount();
+
+            if (expenses.get(i).getCategory().equals(category)) {
+                sum = sum.add(currentAmount);
+
+                if (min.compareTo(currentAmount) > 0) {
+                    min = currentAmount;
+                }
+
+                if (max.compareTo(currentAmount) < 0) {
+                    max = currentAmount;
+                }
+
+                quantity++;
+
+            }
+        }
+        System.out.println("Sum: " + sum);
+        System.out.println("Quantity: " + quantity);
+        System.out.println("Min: " + min);
+        System.out.println("Mid: " + (sum.intValue() / quantity));
+        System.out.println("Max: " + max);
     }
 }

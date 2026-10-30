@@ -1,6 +1,5 @@
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.io.Serializable;
 
 public class Expense implements Serializable {
@@ -49,9 +48,4 @@ public class Expense implements Serializable {
         this.description = description;
         this.category = category;
     }
-
-    
-
-    
-
 }
